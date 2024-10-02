@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace GamesCatalog.Server.Data;
+﻿namespace GamesCatalog.Server.Data;
 
 public class GamesDbContext : DbContext
 {

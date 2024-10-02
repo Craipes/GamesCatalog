@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace GamesCatalog.Server.Data;
+﻿namespace GamesCatalog.Server.Data;
 
 public class Company : BaseEntity
 {

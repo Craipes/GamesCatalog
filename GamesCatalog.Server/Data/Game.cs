@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace GamesCatalog.Server.Data;
+﻿namespace GamesCatalog.Server.Data;
 
 public class Game : BaseEntity
 {
