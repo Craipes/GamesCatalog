@@ -11,7 +11,7 @@ public class Game : BaseEntity
 
     public List<Tag>? Tags { get; set; }
     public List<Platform>? Platforms { get; set; }
-    public List<Catalog>? Catalogs { get; set; }
+    public List<CatalogLink>? CatalogsLinks { get; set; }
     public Company? Developer { get; set; }
     public int? DeveloperId { get; set; }
     public Company? Publisher { get; set; }
