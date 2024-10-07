@@ -11,31 +11,7 @@ builder.Services.AddDbContext<GamesDbContext>(options =>
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.AddSecurityDefinition("AdminApiKey", new OpenApiSecurityScheme()
-    {
-        In = ParameterLocation.Header,
-        Name = "X-API-KEY",
-        Type = SecuritySchemeType.ApiKey,
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    {
-        {
-            new OpenApiSecurityScheme()
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "AdminApiKey"
-                },
-                In = ParameterLocation.Header
-            },
-            new List<string>()
-        }
-    });
-});
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -54,7 +30,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapDefaultControllerRoute();
+if (app.Environment.IsDevelopment()) app.MapDefaultControllerRoute();
 
 app.MapFallbackToFile("/index.html");
 

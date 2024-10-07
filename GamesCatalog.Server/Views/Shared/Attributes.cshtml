@@ -3,14 +3,19 @@
     ViewData["Title"] = Model.AttributeName;
 }
 
+<h1>@Model.AttributeName Editor</h1>
+
 @if (ViewData["Error"] != null)
 {
     <p class="alert alert-danger" style="white-space: pre-line">@ViewData["Error"]</p>
 }
-<br />
-<form method="post" asp-action="@("Add" + Model.AttributeName)">
+else
+{
+    <br />
+}
+<form method="post" asp-action="Add">
     <div class="input-group">
-        <input type="text" class="form-control" name="Name" placeholder="@(Model.AttributeName + " name here")">
+        <input type="text" class="form-control" name="Name" placeholder="@(Model.AttributeName + " name here")" required>
         <button class="btn btn-success" type="submit">Add</button>
     </div>
 </form>
@@ -20,27 +25,27 @@
         <tr>
             <th>ID</th>
             <th>Name</th>
-            <th></th>
+            <th class="col-1"></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.Attributes)
         {
-            <tr>
+            <tr class="align-middle">
                 <td>@item.Id</td>
                 <td>
-                    <form method="post" asp-action="@("Edit" + Model.AttributeName)">
+                    <form method="post" asp-action="Edit")">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="Name" value="@item.Name">
+                            <input type="text" class="form-control" name="Name" value="@item.Name" required>
                             <input hidden name="Id" value="@item.Id" />
-                            <button class="btn btn-outline-warning" type="submit">Edit</button>
+                            <button class="btn btn-warning" type="submit">Edit</button>
                         </div>
                     </form>
                 </td>
                 <td>
-                     <form method="post" asp-action="@("Delete" + Model.AttributeName)">
+                     <form method="post" asp-action="Delete">
                          <input hidden name="Id" value="@item.Id" />
-                         <button class="btn btn-outline-danger text-end" type="submit">Delete</button>
+                         <button class="btn btn-danger w-100" type="submit">Delete</button>
                      </form>
                 </td>
             </tr>
