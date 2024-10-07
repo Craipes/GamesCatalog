@@ -1,0 +1,49 @@
+﻿@model AttributesViewModel
+@{
+    ViewData["Title"] = Model.AttributeName;
+}
+
+@if (ViewData["Error"] != null)
+{
+    <p class="alert alert-danger" style="white-space: pre-line">@ViewData["Error"]</p>
+}
+<br />
+<form method="post" asp-action="@("Add" + Model.AttributeName)">
+    <div class="input-group">
+        <input type="text" class="form-control" name="Name" placeholder="@(Model.AttributeName + " name here")">
+        <button class="btn btn-success" type="submit">Add</button>
+    </div>
+</form>
+<br />
+<table class="table table-striped table-sm">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Attributes)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>
+                    <form method="post" asp-action="@("Edit" + Model.AttributeName)">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="Name" value="@item.Name">
+                            <input hidden name="Id" value="@item.Id" />
+                            <button class="btn btn-outline-warning" type="submit">Edit</button>
+                        </div>
+                    </form>
+                </td>
+                <td>
+                     <form method="post" asp-action="@("Delete" + Model.AttributeName)">
+                         <input hidden name="Id" value="@item.Id" />
+                         <button class="btn btn-outline-danger text-end" type="submit">Delete</button>
+                     </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

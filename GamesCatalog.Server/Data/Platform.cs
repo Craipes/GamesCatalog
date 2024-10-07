@@ -1,6 +1,5 @@
 ﻿namespace GamesCatalog.Server.Data;
 
-public class Platform : BaseEntity
+public class Platform : AttributeEntity
 {
-    [MaxLength(64)] public string Name { get; set; } = string.Empty;
 }
