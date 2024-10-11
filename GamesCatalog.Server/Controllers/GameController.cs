@@ -30,6 +30,7 @@ public class GameController : Controller
             IsEditing = false,
             Game = new(),
             CompaniesSelectList = GetCompaniesSelectList(),
+            GamesSelectList = GetGamesSelectList(null),
             Tags = _context.Tags.Select(t => new LinkCheckboxViewModel(t.Id, t.Name, false, null)).ToList(),
             Platforms = _context.Platforms.Select(t => new LinkCheckboxViewModel(t.Id, t.Name, false, null)).ToList(),
             CatalogsLinks = _context.Catalogs.Select(t => new LinkCheckboxViewModel(t.Id, t.Name, false, null)).ToList()
@@ -47,6 +48,7 @@ public class GameController : Controller
                 .SelectMany(e => e.Errors)
                 .Select(e => e.ErrorMessage));
             model.CompaniesSelectList = GetCompaniesSelectList();
+            model.GamesSelectList = GetGamesSelectList(null);
             return View("Manage", model);
         }
 
@@ -54,6 +56,7 @@ public class GameController : Controller
         if (!UpdateGameModel(model, game))
         {
             model.CompaniesSelectList = GetCompaniesSelectList();
+            model.GamesSelectList = GetGamesSelectList(null);
             return View("Manage", model);
         }
 
@@ -101,6 +104,7 @@ public class GameController : Controller
             IsEditing = true,
             Game = game,
             CompaniesSelectList = GetCompaniesSelectList(),
+            GamesSelectList = GetGamesSelectList(game.Id),
             Tags = tags,
             Platforms = platforms,
             CatalogsLinks = catalogsLinks
@@ -118,6 +122,7 @@ public class GameController : Controller
                 .SelectMany(e => e.Errors)
                 .Select(e => e.ErrorMessage));
             model.CompaniesSelectList = GetCompaniesSelectList();
+            model.GamesSelectList = GetGamesSelectList(model.Game.Id);
             return View("Manage", model);
         }
 
@@ -130,6 +135,7 @@ public class GameController : Controller
         if (loadedGame == null || !UpdateGameModel(model, loadedGame))
         {
             model.CompaniesSelectList = GetCompaniesSelectList();
+            model.GamesSelectList = GetGamesSelectList(model.Game.Id);
             return View("Manage", model);
         }
 
@@ -142,16 +148,54 @@ public class GameController : Controller
 
     private bool UpdateGameModel(GameManageViewModel model, Game game)
     {
+        game.IsReleased = model.Game.IsReleased;
         game.Title = model.Game.Title;
         game.Description = model.Game.Description;
         game.YearOfRelease = model.Game.YearOfRelease;
         game.Rating = model.Game.Rating;
+        game.Price = model.Game.Price;
         game.PreviewUrl = model.Game.PreviewUrl;
         game.ContentsUrls = model.Game.ContentsUrls;
         game.Requirements = model.Game.Requirements;
 
+        if (model.Game.ParentGameId != null)
+        {
+            if (game.Id == model.Game.ParentGameId)
+            {
+                ViewData["Error"] = "Game can't be DLC of itself";
+                return false;
+            }
+            game.ParentGame = _context.Games.Find(model.Game.ParentGameId);
+            if (game.ParentGame == null)
+            {
+                ViewData["Error"] = "Invalid parent game. Try to reload the page";
+                return false;
+            }
+            if (game.ParentGame.IsDLC)
+            {
+                ViewData["Error"] = "Game can't be DLC of a DLC";
+                return false;
+            }
+        }
+        else
+        {
+            game.ParentGameId = null;
+        }
+
         game.Developer = _context.Companies.Find(model.Game.DeveloperId);
+        if (game.Developer == null)
+        {
+            ViewData["Error"] = "Invalid developer. Try to reload the page";
+            return false;
+        }
+
         game.Publisher = _context.Companies.Find(model.Game.PublisherId);
+        if (game.Publisher == null)
+        {
+            ViewData["Error"] = "Invalid publisher. Try to reload the page";
+            return false;
+        }
+
         var tags = model.Tags.Where(t => t.IsChecked).Select(t => _context.Tags.Find(t.Value)).ToList();
         if (tags.Any(t => t == null))
         {
@@ -210,5 +254,16 @@ public class GameController : Controller
     private SelectList GetCompaniesSelectList()
     {
         return new SelectList(_context.Companies.ToList(), "Id", "Name");
+    }
+
+    private SelectList GetGamesSelectList(int? currentId)
+    {
+        return new SelectList(_context.Games
+            .Where(g => g.Id != currentId)
+            .Select(g => new
+            {
+                g.Id,
+                g.Title
+            }).ToList(), "Id", "Title");
     }
 }

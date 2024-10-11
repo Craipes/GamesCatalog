@@ -24,6 +24,11 @@ else
             <th>Preview</th>
             <th>Name</th>
             <th>Developer/Publisher</th>
+            <th>Year</th>
+            <th>Rating</th>
+            <th>Price</th>
+            <th>Is Released?</th>
+            <th>Is DLC?</th>
             <th></th>
             <th></th>
         </tr>
@@ -38,6 +43,11 @@ else
                 </td>
                 <td>@item.Title</td>
                 <td>@item.Developer?.Name/@item.Publisher?.Name</td>
+                <td>@item.YearOfRelease</td>
+                <td>@item.Rating</td>
+                <td>@item.Price</td>
+                <td>@item.IsReleased</td>
+                <td>@item.IsDLC</td>
                 <td>
                     <a class="btn btn-warning w-100" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                 </td>

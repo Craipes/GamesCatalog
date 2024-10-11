@@ -14,14 +14,17 @@ public class AppController : Controller
     [HttpGet("search")]
     public async Task<IEnumerable<GameDto>> Search([FromQuery] string? search = null, [FromQuery] string? tags = null, [FromQuery] string? platforms = null,
         [FromQuery] string? catalogs = null, [FromQuery] string? developers = null, [FromQuery] string? publishers = null, [FromQuery] OrderingType ordering = OrderingType.Default,
-        [FromQuery] int minRating = 0, [FromQuery] int maxRating = 100, [FromQuery] int minYear = 0, [FromQuery] int maxYear = 10000, [FromQuery] bool? dlc = null)
+        [FromQuery] int minRating = 0, [FromQuery] int maxRating = 100, [FromQuery] int minYear = 0, [FromQuery] int maxYear = 10000, [FromQuery] bool? dlc = null,
+        [FromQuery] double minPrice = 0, [FromQuery] double maxPrice = 1000000, [FromQuery] bool? isReleased = null, [FromQuery] bool indexDLCs = false,
+        [FromQuery] int gamesPerPage = 12, [FromQuery] int page = 1)
     {
         IQueryable<Game> request = _context.Games
             .Include(g => g.Publisher)
             .Include(g => g.Developer)
             .Include(g => g.Tags)
             .Include(g => g.Platforms)
-            .Include(g => g.CatalogsLinks);
+            .Include(g => g.CatalogsLinks)
+            .Include(g => g.DLCs);
 
         if (!string.IsNullOrEmpty(search))
         {
@@ -54,8 +57,21 @@ public class AppController : Controller
         }
         request = request.Where(g => g.Rating >= minRating && g.Rating <= maxRating);
         request = request.Where(g => g.YearOfRelease >= minYear && g.YearOfRelease <= maxYear);
+        request = request.Where(g => g.Price >= minPrice && g.Price <= maxPrice);
 
-        // DLC + Price + Pagination
+        if (isReleased != null)
+        {
+            request = request.Where(g => g.IsReleased == isReleased);
+        }
+        if (dlc != null)
+        {
+            request = request.Where(g => (g.ParentGameId != null) == dlc);
+        }
+
+        if (!indexDLCs)
+        {
+            request = request.Where(g => g.ParentGameId == null);
+        }
 
         request = ordering switch
         {
@@ -67,6 +83,10 @@ public class AppController : Controller
             OrderingType.RatingDesc => request.OrderByDescending(g => g.Rating),
             _ => request
         };
+
+        gamesPerPage = Math.Max(1, gamesPerPage);
+        page = Math.Max(1, page);
+        request = request.Skip((page - 1) * gamesPerPage).Take(gamesPerPage);
 
         var games = await request.ToListAsync();
         return games.Select(GameDto.FromGame);

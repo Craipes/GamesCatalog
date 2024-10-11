@@ -20,5 +20,6 @@ public class GamesDbContext : DbContext
         modelBuilder.Entity<Game>().HasMany(g => g.Platforms).WithMany();
         modelBuilder.Entity<Game>().HasMany(g => g.Tags).WithMany();
         modelBuilder.Entity<Game>().HasMany<Catalog>().WithMany().UsingEntity<CatalogLink>();
+        modelBuilder.Entity<Game>().HasOne(g => g.ParentGame).WithMany(g => g.DLCs).HasForeignKey(g => g.ParentGameId);
     }
 }
