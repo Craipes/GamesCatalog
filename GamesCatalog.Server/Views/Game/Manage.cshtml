@@ -1,0 +1,71 @@
+﻿@model GameManageViewModel
+@{
+    ViewData["Title"] = "Game Editor";
+}
+
+@if (ViewData["Error"] != null)
+{
+    <p class="alert alert-danger" style="white-space: pre-line">@ViewData["Error"]</p>
+}
+else
+{
+    <br />
+}
+
+<form method="post" asp-action="@(Model.IsEditing ? "Edit" : "Add")">
+    <input asp-for="IsEditing" hidden />
+    <input asp-for="Game.Id" hidden />
+    <div class="mb-3">
+        <label asp-for="Game.Title" class="form-label">Title</label>
+        <input asp-for="Game.Title" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Game.Description" class="form-label">Description</label>
+        <textarea asp-for="Game.Description" class="form-control" required style="height: 100px"></textarea>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Game.YearOfRelease" class="form-label">Year of Release</label>
+        <input asp-for="Game.YearOfRelease" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Game.Rating" class="form-label">Rating</label>
+        <input asp-for="Game.Rating" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Game.PreviewUrl" class="form-label">Preview URL</label>
+        <input asp-for="Game.PreviewUrl" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label asp-for="Game.ContentsUrls" class="form-label">Contents URLs</label>
+        <textarea asp-for="Game.ContentsUrls" class="form-control" style="height: 250px"></textarea>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Game.Requirements" class="form-label">Requirements</label>
+        <textarea asp-for="Game.Requirements" class="form-control" style="height: 250px"></textarea>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Game.DeveloperId" class="form-label">Developer</label>
+        <select asp-for="Game.DeveloperId" asp-items="@Model.CompaniesSelectList" class="form-control" required>
+            <option value="null">None</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Game.PublisherId" class="form-label">Publisher</label>
+        <select asp-for="Game.PublisherId" asp-items="@Model.CompaniesSelectList" class="form-control">
+            <option value="null">None</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <p class="form-label fw-bold">Tags</p>
+        <link-checkbox-multi-select property="Tags" items="@Model.Tags"></link-checkbox-multi-select>
+    </div>
+    <div class="mb-3">
+        <p class="form-label fw-bold">Platforms</p>
+        <link-checkbox-multi-select property="Platforms" items="@Model.Platforms"></link-checkbox-multi-select>
+    </div>
+    <div class="mb-3">
+        <p class="form-label fw-bold">Catalogs</p>
+        <link-checkbox-multi-select property="CatalogsLinks" items="@Model.CatalogsLinks" append-links></link-checkbox-multi-select>
+    </div>
+    <button type="submit" class="btn btn-primary">@(Model.IsEditing ? "Save" : "Add")</button>
+</form>

@@ -1,0 +1,53 @@
+﻿@model GamesViewModel
+@{
+    ViewData["Title"] = "Games";
+}
+
+<h1>Games Editor</h1>
+
+@if (ViewData["Error"] != null)
+{
+    <p class="alert alert-danger" style="white-space: pre-line">@ViewData["Error"]</p>
+}
+else
+{
+    <br />
+}
+<div class="row justify-content-end">
+    <a class="btn btn-success col-2" asp-action="Add">Add</a>
+</div>
+<br />
+<table class="table table-striped ">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Preview</th>
+            <th>Name</th>
+            <th>Developer/Publisher</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Games)
+        {
+            <tr class="align-middle">
+                <td>@item.Id</td>
+                <td>
+                    <img src="@item.PreviewUrl" style="max-height: 50px; max-width: 50px" />
+                </td>
+                <td>@item.Title</td>
+                <td>@item.Developer?.Name/@item.Publisher?.Name</td>
+                <td>
+                    <a class="btn btn-warning w-100" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                </td>
+                <td>
+                    <form method="post" asp-action="Delete">
+                        <input hidden name="Id" value="@item.Id" />
+                        <button class="btn btn-danger w-100" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

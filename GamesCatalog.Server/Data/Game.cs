@@ -7,6 +7,7 @@ public class Game : BaseEntity
     [Column(TypeName = "tinyint")] [Range(0, 100)] public int Rating { get; set; }
     [MaxLength(5000)] public string Description { get; set; } = string.Empty;
     [MaxLength(1000)] public string Requirements { get; set; } = string.Empty;
+    [MaxLength(500)] public string PreviewUrl { get; set; } = string.Empty;
     [MaxLength(5000)] public string ContentsUrls { get; set; } = string.Empty;
 
     public List<Tag>? Tags { get; set; }
