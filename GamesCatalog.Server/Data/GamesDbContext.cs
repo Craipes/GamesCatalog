@@ -15,8 +15,8 @@ public class GamesDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Game>().HasOne(g => g.Developer).WithMany().HasForeignKey(g => g.DeveloperId);
-        modelBuilder.Entity<Game>().HasOne(g => g.Publisher).WithMany().HasForeignKey(g => g.PublisherId);
+        modelBuilder.Entity<Game>().HasOne(g => g.Developer).WithMany(c => c.DevelopedGames).HasForeignKey(g => g.DeveloperId);
+        modelBuilder.Entity<Game>().HasOne(g => g.Publisher).WithMany(c => c.PublishedGames).HasForeignKey(g => g.PublisherId);
         modelBuilder.Entity<Game>().HasMany(g => g.Platforms).WithMany();
         modelBuilder.Entity<Game>().HasMany(g => g.Tags).WithMany();
         modelBuilder.Entity<Game>().HasMany<Catalog>().WithMany().UsingEntity<CatalogLink>();

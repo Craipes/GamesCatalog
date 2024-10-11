@@ -29,7 +29,7 @@ namespace GamesCatalog.Server.Migrations
 
                     b.HasIndex("PlatformsId");
 
-                    b.ToTable("GamePlatform");
+                    b.ToTable("GamePlatform", (string)null);
                 });
 
             modelBuilder.Entity("GameTag", b =>
@@ -44,7 +44,7 @@ namespace GamesCatalog.Server.Migrations
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("GameTag");
+                    b.ToTable("GameTag", (string)null);
                 });
 
             modelBuilder.Entity("GamesCatalog.Server.Data.Catalog", b =>
@@ -60,7 +60,7 @@ namespace GamesCatalog.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Catalogs");
+                    b.ToTable("Catalogs", (string)null);
                 });
 
             modelBuilder.Entity("GamesCatalog.Server.Data.CatalogLink", b =>
@@ -80,7 +80,7 @@ namespace GamesCatalog.Server.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("CatalogLinks");
+                    b.ToTable("CatalogLinks", (string)null);
                 });
 
             modelBuilder.Entity("GamesCatalog.Server.Data.Company", b =>
@@ -96,7 +96,7 @@ namespace GamesCatalog.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("GamesCatalog.Server.Data.Game", b =>
@@ -159,7 +159,7 @@ namespace GamesCatalog.Server.Migrations
 
                     b.HasIndex("PublisherId");
 
-                    b.ToTable("Games");
+                    b.ToTable("Games", (string)null);
                 });
 
             modelBuilder.Entity("GamesCatalog.Server.Data.Platform", b =>
@@ -175,7 +175,7 @@ namespace GamesCatalog.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Platforms");
+                    b.ToTable("Platforms", (string)null);
                 });
 
             modelBuilder.Entity("GamesCatalog.Server.Data.Tag", b =>
@@ -191,7 +191,7 @@ namespace GamesCatalog.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tags");
+                    b.ToTable("Tags", (string)null);
                 });
 
             modelBuilder.Entity("GamePlatform", b =>

@@ -87,7 +87,7 @@ public class AppController : Controller
         page = Math.Max(1, page);
         request = request.Skip((page - 1) * gamesPerPage).Take(gamesPerPage);
 
-        var games = await request.ToListAsync();
+        var games = await request.AsNoTracking().ToListAsync();
         return games.Select(GameDto.FromGame);
     }
 
@@ -107,9 +107,28 @@ public class AppController : Controller
             .Include(g => g.DLCs).ThenInclude(g => g.Platforms)
             .Include(g => g.DLCs).ThenInclude(g => g.CatalogsLinks)
 
+            .AsNoTracking()
             .FirstOrDefaultAsync(g => g.Id == id);
 
         return game == null ? null : GameDto.FromGame(game);
+    }
+
+    [HttpGet("filters")]
+    public async Task<FiltersDto> GetFilters()
+    {
+        var tags = await _context.Tags.ToListAsync();
+        var platforms = await _context.Platforms.ToListAsync();
+        var catalogs = await _context.Catalogs.ToListAsync();
+
+        var developers = await _context.Companies.Where(c => c.DevelopedGames.Count != 0).ToListAsync();
+        var publishers = await _context.Companies.Where(c => c.PublishedGames.Count != 0).ToListAsync();
+
+        return new FiltersDto(
+            tags.Select(t => new FilterDto(t.Id, t.Name)).ToList(),
+            platforms.Select(p => new FilterDto(p.Id, p.Name)).ToList(),
+            catalogs.Select(c => new FilterDto(c.Id, c.Name)).ToList(),
+            developers.Select(d => new FilterDto(d.Id, d.Name)).ToList(),
+            publishers.Select(p => new FilterDto(p.Id, p.Name)).ToList());
     }
 
     private static bool TryParseStringToIntArray(string value, out int[] result)
