@@ -23,8 +23,7 @@ public class AppController : Controller
             .Include(g => g.Developer)
             .Include(g => g.Tags)
             .Include(g => g.Platforms)
-            .Include(g => g.CatalogsLinks)
-            .Include(g => g.DLCs);
+            .Include(g => g.CatalogsLinks);
 
         if (!string.IsNullOrEmpty(search))
         {
@@ -90,6 +89,27 @@ public class AppController : Controller
 
         var games = await request.ToListAsync();
         return games.Select(GameDto.FromGame);
+    }
+
+    [HttpGet("game/{id}")]
+    public async Task<GameDto?> GetGame(int id)
+    {
+        var game = await _context.Games
+            .Include(g => g.Publisher)
+            .Include(g => g.Developer)
+            .Include(g => g.Tags)
+            .Include(g => g.Platforms)
+            .Include(g => g.CatalogsLinks)
+
+            .Include(g => g.DLCs).ThenInclude(g => g.Publisher)
+            .Include(g => g.DLCs).ThenInclude(g => g.Developer)
+            .Include(g => g.DLCs).ThenInclude(g => g.Tags)
+            .Include(g => g.DLCs).ThenInclude(g => g.Platforms)
+            .Include(g => g.DLCs).ThenInclude(g => g.CatalogsLinks)
+
+            .FirstOrDefaultAsync(g => g.Id == id);
+
+        return game == null ? null : GameDto.FromGame(game);
     }
 
     private static bool TryParseStringToIntArray(string value, out int[] result)
