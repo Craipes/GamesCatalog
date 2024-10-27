@@ -1,15 +1,20 @@
 import Filters from '@/Comp/Filters'
-import React from 'react'
+import GameList from '@/Comp/GameList'
+import React, {useState} from 'react'
 
 function Home() {
+  const [filters, setFilters] = useState(null);
+
+  const applyFilters = (selectedFilters) => {
+    setFilters(selectedFilters);
+  };
+
   return (
-    <div className='grid grid-cols-4'>
-            <div className='h-full hidden md:block'>
-              <Filters />
-            </div>
-            <div className='col-span-4 md:col-span-3'>Game list</div>
+    <div>
+      <Filters/>
+      <GameList/>
     </div>
-  )
+  );
 }
 
 export default Home
