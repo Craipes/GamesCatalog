@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
-import {CarouselNext,CarouselPrevious,CarouselItem,CarouselContent,Carousel} from '@/components/ui/carousel';
+import { CarouselNext, CarouselPrevious, CarouselItem, CarouselContent, Carousel } from '@/components/ui/carousel';
 
 const style = {
   position: 'absolute',
@@ -22,7 +22,7 @@ export default function TransitionsModal({ open, handleClose, game }) {
 
   return (
     <Modal
-    className='rounded-xl'
+      style={{  borderRadius: '8px' }}
       aria-labelledby="game-modal-title"
       aria-describedby="game-modal-description"
       open={open}
@@ -35,24 +35,23 @@ export default function TransitionsModal({ open, handleClose, game }) {
     >
       <Fade in={open}>
         <Box sx={style}>
-            {/* Image Carousel */}
           <Typography sx={{ mt: 2 }}>
             <Carousel>
               <CarouselContent>
                 {game.contentUrls.map((url, index) => (
-                  <CarouselItem key={index}>
+                  <CarouselItem className="basis-1/2" key={index}>
                     <img
                       src={url}
                       alt={`${game.title} image ${index + 1}`}
-                      style={{ width: '80%', height: 'auto', borderRadius: '8px' }}
+                      style={{ width: '500px', height: '400px', objectFit: 'cover', borderRadius: '8px' }}
                     />
                   </CarouselItem>
                 ))}
               </CarouselContent>
               {game.contentUrls.length > 1 && (
                 <>
-                              <CarouselPrevious />
-                              <CarouselNext />
+                  <CarouselPrevious />
+                  <CarouselNext />
                 </>
               )}
             </Carousel>
@@ -64,7 +63,7 @@ export default function TransitionsModal({ open, handleClose, game }) {
             <strong>Release Year:</strong> {game.yearOfRelease} <br />
             <strong>Rating:</strong> ({game.rating}/100) <br />
             <strong>Price:</strong> ${game.price} <br />
-            <strong >Description:</strong> {game.description} <br />
+            <strong>Description:</strong> {game.description} <br />
             <strong>Requirements:</strong> {game.requirements} <br />
             <strong>Developer:</strong> {game.developer} <br />
             <strong>Publisher:</strong> {game.publisher} <br />
@@ -95,6 +94,6 @@ export default function TransitionsModal({ open, handleClose, game }) {
           </Typography>
         </Box>
       </Fade>
-    </Modal>          
+    </Modal>
   );
 }
