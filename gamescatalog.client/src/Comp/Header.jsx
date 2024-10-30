@@ -13,6 +13,7 @@ function Header({ onSearch }) {
       <div className='flex bg-slate-200 p-2 w-full mx-5 rounded-full items-center'>
         <HiOutlineMagnifyingGlass />
         <input
+          width='100%'
           type="text"
           placeholder="Пошук"
           className='px-2 bg-transparent outline-none'

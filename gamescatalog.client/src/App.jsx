@@ -7,7 +7,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className='h-screen'>
+    <div className='h-screen overflow-hidden'>
       <Header onSearch={setSearchQuery} />
       <Home searchQuery={searchQuery} />
     </div>

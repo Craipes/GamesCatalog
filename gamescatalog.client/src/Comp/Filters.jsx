@@ -5,17 +5,12 @@ import { Switch } from '@/components/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@radix-ui/react-label';
 import { Button } from '@/components/ui/button';
+import Slider from '@mui/material/Slider';
+import { createTheme } from '@mui/material/styles';
+import {Fade} from 'react-awesome-reveal'
 
 function Filters({ onApplyFilters }) {
-  const [filters, setFilters] = useState({
-    tags: [],
-    platforms: [],
-    catalogs: [],
-    developers: [],
-    publishers: []
-  });
-
-  const [selectedFilters, setSelectedFilters] = useState({
+  const initialFilters = {
     tags: [],
     platforms: [],
     catalogs: [],
@@ -24,16 +19,37 @@ function Filters({ onApplyFilters }) {
     ordering: 0,
     minRating: 0,
     maxRating: 100,
-    minYear: 0,
-    maxYear: 10000,
+    minYear: 1980,
+    maxYear: 2024,
     dlc: null,
     minPrice: 0,
-    maxPrice: 1000000,
+    maxPrice: 1000,
     isReleased: true,
     indexDLCs: true,
     gamesPerPage: 12,
     page: 1
+  };
+
+  const theme = createTheme({
+    palette: {
+      ochre: {
+        main: '#E3D026',
+        light: '#E9DB5D',
+        dark: '#A29415',
+        contrastText: '#242105',
+      },
+    },
   });
+
+  const [filters, setFilters] = useState({
+    tags: [],
+    platforms: [],
+    catalogs: [],
+    developers: [],
+    publishers: []
+  });
+
+  const [selectedFilters, setSelectedFilters] = useState(initialFilters);
 
   useEffect(() => {
     fetch('https://localhost:7200/api/App/filters')
@@ -42,7 +58,6 @@ function Filters({ onApplyFilters }) {
       .catch(error => console.error("Помилка завантаження даних:", error));
   }, []);
 
-  // Функція для обробки вибору
   const handleCheckboxChange = (filterType, id) => {
     setSelectedFilters(prevFilters => {
       const updatedList = prevFilters[filterType].includes(id)
@@ -53,106 +68,236 @@ function Filters({ onApplyFilters }) {
     });
   };
 
+  const handleRadioChange = (key, value) => {
+    setSelectedFilters(prevFilters => ({
+      ...prevFilters,
+      [key]: value
+    }));
+  };
+
   const handleApplyFilters = () => {
     onApplyFilters(selectedFilters);
+  };
+
+  const handleResetFilters = () => {
+    setSelectedFilters(initialFilters).then(() => onApplyFilters(selectedFilters));
+    
+  };
+
+  const handleRatingChange = (event, newValue) => {
+    setSelectedFilters(prevFilters => ({
+      ...prevFilters,
+      minRating: newValue[0],
+      maxRating: newValue[1]
+    }));
+  };
+
+  const handlePriceChange = (event, newValue) => {
+    setSelectedFilters(prevFilters => ({
+      ...prevFilters,
+      minPrice: newValue[0],
+      maxPrice: newValue[1]
+    }));
+  };
+
+  const handleYearChange = (event, newValue) => {
+    setSelectedFilters(prevFilters => ({
+      ...prevFilters,
+      minYear: newValue[0],
+      maxYear: newValue[1]
+    }));
   };
 
   return (
     <div>
       <h2 className='text-[30px] font-bold'>Фільтри</h2>
-<ScrollArea className="h-[940px] w-[350px] rounded-md p-4">
-      <div className='px-4'>
-        
-
-        {/* Теги */}
-        <section>
-          <h3 className='text-[20px] font-bold'>Теги</h3>
-          <ScrollArea className="h-[200px] w-[350px] rounded-md p-4">
-            <ul>
-              {filters.tags.map(tag => (
-                <div key={tag.id} className='flex items-center'>
-                  <Checkbox 
-                    className='mr-2'
-                    onCheckedChange={() => handleCheckboxChange('tags', tag.id)} 
-                  />
-                  <li>{tag.name}</li>
+     <ScrollArea className="h-[940px] w-[350px] rounded-md p-4">
+        <div className='px-4'>
+          {/* Сортування */}
+          <section>
+            <h3 className='text-[20px] font-bold'>Сортування</h3>
+            <RadioGroup defaultValue="0">
+              {['За замовчуванням', 'Назва зростання', 'Назва спадання', 'Рейтинг зростання', 'Рейтинг спадання', 'Рік зростання', 'Рік спадання'].map((label, index) => (
+                <Fade>
+                <div className="flex items-center space-x-2" key={index}>
+                  <RadioGroupItem value={index.toString()} onClick={() => handleRadioChange('ordering', index)} />
+                  <Label>{label}</Label>
                 </div>
+                </Fade>
               ))}
-            </ul>
-          </ScrollArea>
-        </section>
+            </RadioGroup>
+          </section>
 
-        {/* Платформи */}
-        <section>
-          <h3 className='text-[20px] font-bold'>Платформи</h3>
-          <ul>
+          {/* DLC */}
+          <section>
+            <h3 className='text-[20px] font-bold mt-4'>DLC</h3>
+            <RadioGroup defaultValue="2">
+              {['Шукати всі', 'Тільки з DLC', 'Без DLC'].map((label, index) => (
+                <Fade>
+                <div className="flex items-center space-x-2" key={index}>
+                  <RadioGroupItem value={index.toString()} onClick={() => handleRadioChange('dlc', index === 0 ? null : index === 1)} />
+                  <Label>{label}</Label>
+                </div>
+                </Fade>
+              ))}
+            </RadioGroup>
+          </section>
+
+          {/* Вже випущена */}
+          <section>
+            <h3 className='text-[20px] font-bold mt-2'>Вже випущена</h3>
+            <Fade>
+            <Switch className='ml-2' checked={selectedFilters.isReleased} onCheckedChange={value => handleRadioChange('isReleased', value)} />
+            </Fade>
+          </section>
+
+          {/* Показувати DLC разом з іграми */}
+          <section>
+            <h3 className='text-[20px] font-bold mt-2'>Показувати DLC разом з іграми</h3>
+            <Fade>
+            <Switch className='ml-2' checked={selectedFilters.indexDLCs} onCheckedChange={value => handleRadioChange('indexDLCs', value)} />
+            </Fade>
+          </section>
+
+          {/* Ціна */}
+          <section>
+            <h3 className='text-[20px] font-bold mt-4'>Ціна</h3>
+            <Fade>
+            <Slider
+            color='theme'
+              value={[selectedFilters.minPrice, selectedFilters.maxPrice]}
+              onChange={handlePriceChange}
+              min={0}
+              max={1000}
+              valueLabelDisplay="auto"
+            />
+            </Fade>
+          </section>
+
+          {/* Рейтинг */}
+          <section>
+            <h3 className='text-[20px] font-bold mt-4'>Рейтинг</h3>
+            <Fade>
+            <Slider
+            color='theme'
+              value={[selectedFilters.minRating, selectedFilters.maxRating]}
+              onChange={handleRatingChange}
+              min={0}
+              max={100}
+              valueLabelDisplay="auto"
+            />
+            </Fade>
+          </section>
+
+          {/* Рік */}
+          <section>
+            <h3 className='text-[20px] font-bold mt-4'>Рік</h3>
+            <Fade>
+            <Slider
+            color='theme'
+              value={[selectedFilters.minYear, selectedFilters.maxYear]}
+              onChange={handleYearChange}
+              min={1980}
+              max={2024}
+              valueLabelDisplay="auto"
+            />
+            </Fade>
+          </section>
+
+          {/* Теги */}
+          <section>
+            <h3 className='text-[20px] font-bold mt-4'>Теги</h3>
+            {filters.tags.map(tag => (
+              <Fade>
+              <div key={tag.id} className='flex items-center'>
+                <Checkbox
+                  checked={selectedFilters.tags.includes(tag.id)}
+                  onCheckedChange={() => handleCheckboxChange('tags', tag.id)}
+                  className='mr-2'
+                />
+                <Label>{tag.name}</Label>
+              </div>
+              </Fade>
+            ))}
+          </section>
+
+          {/* Платформи */}
+          <section>
+            <h3 className='text-[20px] font-bold mt-4'>Платформи</h3>
             {filters.platforms.map(platform => (
-              <div key={platform.id} className='flex items-center ml-4'>
-                <Checkbox 
+              <Fade>
+              <div key={platform.id} className='flex items-center'>
+                <Checkbox
+                  checked={selectedFilters.platforms.includes(platform.id)}
+                  onCheckedChange={() => handleCheckboxChange('platforms', platform.id)}
                   className='mr-2'
-                  onCheckedChange={() => handleCheckboxChange('platforms', platform.id)} 
                 />
-                <li>{platform.name}</li>
+                <Label>{platform.name}</Label>
               </div>
+              </Fade>
             ))}
-          </ul>
-        </section>
+          </section>
 
-        {/* Каталоги */}
-        <section>
-          <h3 className='text-[20px] font-bold'>Каталоги</h3>
-          <ul>
+          {/* Каталоги */}
+          <section>
+            <h3 className='text-[20px] font-bold mt-4'>Каталоги</h3>
             {filters.catalogs.map(catalog => (
-              <div key={catalog.id} className='flex items-center ml-4'>
-                <Checkbox 
+              <Fade>
+              <div key={catalog.id} className='flex items-center'>
+                <Checkbox
+                  checked={selectedFilters.catalogs.includes(catalog.id)}
+                  onCheckedChange={() => handleCheckboxChange('catalogs', catalog.id)}
                   className='mr-2'
-                  onCheckedChange={() => handleCheckboxChange('catalogs', catalog.id)} 
                 />
-                <li>{catalog.name}</li>
+                <Label>{catalog.name}</Label>
               </div>
+              </Fade>
             ))}
-          </ul>
-        </section>
+          </section>
 
-        {/* Розробники */}
-        <section>
-          <h3 className='text-[20px] font-bold'>Розробники</h3>
-          <ul>
+          {/* Розробники */}
+          <section>
+            <h3 className='text-[20px] font-bold mt-4'>Розробники</h3>
             {filters.developers.map(developer => (
-              <div key={developer.id} className='flex items-center ml-4'>
-                <Checkbox 
+              <Fade>
+              <div key={developer.id} className='flex items-center'>
+                <Checkbox
+                  checked={selectedFilters.developers.includes(developer.id)}
+                  onCheckedChange={() => handleCheckboxChange('developers', developer.id)}
                   className='mr-2'
-                  onCheckedChange={() => handleCheckboxChange('developers', developer.id)} 
                 />
-                <li>{developer.name}</li>
+                <Label>{developer.name}</Label>
               </div>
+              </Fade>
             ))}
-          </ul>
-        </section>
+          </section>
 
-        {/* Видавці */}
-        <section>
-          <h3 className='text-[20px] font-bold'>Видавці</h3>
-          <ul>
+          {/* Видавці */}
+          <section>
+            <h3 className='text-[20px] font-bold mt-4'>Видавці</h3>
             {filters.publishers.map(publisher => (
-              <div key={publisher.id} className='flex items-center ml-4'>
-                <Checkbox 
+              <Fade>
+              <div key={publisher.id} className='flex items-center'>
+                <Checkbox
+                  checked={selectedFilters.publishers.includes(publisher.id)}
+                  onCheckedChange={() => handleCheckboxChange('publishers', publisher.id)}
                   className='mr-2'
-                  onCheckedChange={() => handleCheckboxChange('publishers', publisher.id)} 
                 />
-                <li>{publisher.name}</li>
+                <Label>{publisher.name}</Label>
               </div>
+              </Fade>
             ))}
-          </ul>
-        </section>
-
-      
+          </section>
+        </div>
+      </ScrollArea>
+      {/* Кнопки "Застосувати" та "Скинути" */}
+  <Fade>
+      <div className="flex justify-center space-x-4 mt-4">
+        <Button className="rounded-xl" onClick={handleApplyFilters}>Застосувати</Button>
+        <Button className="rounded-xl" onClick={handleResetFilters}>Скинути</Button>
       </div>
-
-    </ScrollArea>
-    <Button className="rounded-xl mx-auto" onClick={handleApplyFilters}>Застосувати</Button>
+      </Fade>
     </div>
-
   );
 }
 

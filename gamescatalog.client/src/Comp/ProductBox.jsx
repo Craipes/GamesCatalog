@@ -1,8 +1,8 @@
 import React from 'react';
 
-function ProductBox({ game }) {
+function ProductBox({ game,onClick }) {
     return (
-        <div className="border rounded-xl shadow-lg flex flex-col justify-between h-full">
+        <div onClick={onClick} className="cursor-pointer border rounded-xl shadow-lg flex flex-col justify-between h-full hover:scale-105 transition ease-in-out hover:shadow-slate-300 hover:animate-in">
             {/* Зображення гри */}
             <img src={game.previewUrl} alt={game.title} className="w-full h-48 object-cover rounded-tr-xl rounded-tl-xl" />
 
@@ -40,7 +40,7 @@ function ProductBox({ game }) {
                     {/* DLC */}
                     {game.isDLC && (
                         <div className="mt-4">
-                            <h4 className="text-sm font-semibold text-purple-600">DLC:</h4>
+                            <h4 className="text-sm font-semibold text-purple-600">DLC</h4>
                             <ul className="flex flex-wrap gap-2 mt-1">
                                 {game.dlCs.map((dlc, index) => (
                                     <li key={index} className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
