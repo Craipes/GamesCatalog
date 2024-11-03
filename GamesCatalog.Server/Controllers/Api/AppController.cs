@@ -7,12 +7,14 @@ namespace GamesCatalog.Server.Controllers.Api;
 public class AppController : Controller
 {
     private readonly IFilterService _filterService;
+    private readonly IGamesQueryService _gamesQueryService;
 
     private readonly GamesDbContext _context;
 
-    public AppController(IFilterService filterService, GamesDbContext context)
+    public AppController(IFilterService filterService, IGamesQueryService gamesQueryService, GamesDbContext context)
     {
         _filterService = filterService;
+        _gamesQueryService = gamesQueryService;
         _context = context;
     }
 
@@ -23,13 +25,7 @@ public class AppController : Controller
         [FromQuery] double minPrice = 0, [FromQuery] double maxPrice = 1000000, [FromQuery] bool? isReleased = null, [FromQuery] bool indexDLCs = false,
         [FromQuery] int gamesPerPage = 12, [FromQuery] int page = 1)
     {
-        IQueryable<Game> request = _context.Games
-            .Include(g => g.Publisher)
-            .Include(g => g.Developer)
-            .Include(g => g.Tags)
-            .Include(g => g.Platforms)
-            .Include(g => g.CatalogsLinks)
-                .ThenInclude(l => l.Catalog);
+        var request = _gamesQueryService.GetGamesQuery();
 
         if (!string.IsNullOrEmpty(search))
         {
@@ -88,31 +84,16 @@ public class AppController : Controller
 
         gamesPerPage = Math.Max(1, gamesPerPage);
         page = Math.Max(1, page);
-        request = request.Skip((page - 1) * gamesPerPage).Take(gamesPerPage);
+        request = _gamesQueryService.Paginate(request, gamesPerPage, page);
 
-        var games = await request.AsNoTracking().ToListAsync();
+        var games = await request.ToListAsync();
         return games.Select(GameDto.FromGame);
     }
 
     [HttpGet("game/{id}")]
     public async Task<GameDto?> GetGame(int id)
     {
-        var game = await _context.Games
-            .Include(g => g.Publisher)
-            .Include(g => g.Developer)
-            .Include(g => g.Tags)
-            .Include(g => g.Platforms)
-            .Include(g => g.CatalogsLinks).ThenInclude(l => l.Catalog)
-
-            .Include(g => g.DLCs).ThenInclude(g => g.Publisher)
-            .Include(g => g.DLCs).ThenInclude(g => g.Developer)
-            .Include(g => g.DLCs).ThenInclude(g => g.Tags)
-            .Include(g => g.DLCs).ThenInclude(g => g.Platforms)
-            .Include(g => g.DLCs).ThenInclude(g => g.CatalogsLinks)
-
-            .AsNoTracking()
-            .FirstOrDefaultAsync(g => g.Id == id);
-
+        var game = await _gamesQueryService.GetGamesWithDLCsQuery().FirstOrDefaultAsync(g => g.Id == id);
         return game == null ? null : GameDto.FromGame(game);
     }
 
@@ -139,7 +120,7 @@ public class AppController : Controller
         if (string.IsNullOrEmpty(value))
         {
             result = [];
-            return true;
+            return false;
         }
         var values = value.Split(',');
         result = new int[values.Length];

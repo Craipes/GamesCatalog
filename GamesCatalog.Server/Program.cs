@@ -20,7 +20,8 @@ builder.Services.AddDbContext<GamesDbContext>(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IFilterService, FilterService>();
+builder.Services.AddScoped<IFilterService, FilterService>();
+builder.Services.AddScoped<IGamesQueryService, GamesQueryService>();
 
 var app = builder.Build();
 
