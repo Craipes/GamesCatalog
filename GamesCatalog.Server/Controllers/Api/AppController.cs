@@ -1,13 +1,18 @@
-﻿namespace GamesCatalog.Server.Controllers.Api;
+﻿using GamesCatalog.Server.Services;
+
+namespace GamesCatalog.Server.Controllers.Api;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AppController : Controller
 {
+    private readonly IFilterService _filterService;
+
     private readonly GamesDbContext _context;
 
-    public AppController(GamesDbContext context)
+    public AppController(IFilterService filterService, GamesDbContext context)
     {
+        _filterService = filterService;
         _context = context;
     }
 
@@ -31,47 +36,43 @@ public class AppController : Controller
             search = search.ToUpper();
             request = request.Where(g => g.Title.ToUpper().Contains(search));
         }
-        if (!string.IsNullOrEmpty(tags))
+        if (TryParseStringToIntArray(tags, out var tagsList))
         {
-            if (TryParseStringToIntArray(tags, out var tagsList))
-                request = request.Where(g => tagsList.All(t => g.Tags.Any(a => a.Id == t)));
+            request = _filterService.FilterByTags(request, tagsList);
         }
-        if (!string.IsNullOrEmpty(platforms))
+        if (TryParseStringToIntArray(platforms, out var platformsList))
         {
-            if (TryParseStringToIntArray(platforms, out var platformsList))
-                request = request.Where(g => g.Platforms.Any(p => platformsList.Contains(p.Id)));
+            request = _filterService.FilterByPlatforms(request, platformsList);
         }
-        if (!string.IsNullOrEmpty(catalogs))
+        if (TryParseStringToIntArray(catalogs, out var catalogsList))
         {
-            if (TryParseStringToIntArray(catalogs, out var catalogsList))
-                request = request.Where(g => g.CatalogsLinks.Any(c => catalogsList.Contains(c.CatalogId)));
+            request = _filterService.FilterByCatalogs(request, catalogsList);
         }
-        if (!string.IsNullOrEmpty(developers))
+        if (TryParseStringToIntArray(developers, out var developersList))
         {
-            if (TryParseStringToIntArray(developers, out var developersList))
-                request = request.Where(g => developersList.Contains(g.DeveloperId ?? 0));
+            request = _filterService.FilterByDevelopers(request, developersList);
         }
-        if (!string.IsNullOrEmpty(publishers))
+        if (TryParseStringToIntArray(publishers, out var publishersList))
         {
-            if (TryParseStringToIntArray(publishers, out var publishersList))
-                request = request.Where(g => publishersList.Contains(g.PublisherId ?? 0));
+            request = _filterService.FilterByPublishers(request, publishersList);
         }
-        request = request.Where(g => g.Rating >= minRating && g.Rating <= maxRating);
-        request = request.Where(g => g.YearOfRelease >= minYear && g.YearOfRelease <= maxYear);
-        request = request.Where(g => g.Price >= minPrice && g.Price <= maxPrice);
+
+        request = _filterService.FilterByRating(request, minRating, maxRating);
+        request = _filterService.FilterByYear(request, minYear, maxYear);
+        request = _filterService.FilterByPrice(request, minPrice, maxPrice);
 
         if (isReleased != null)
         {
-            request = request.Where(g => g.IsReleased == isReleased);
+            request = _filterService.FilterByReleaseStatus(request, isReleased.Value);
         }
         if (dlc != null)
         {
-            request = request.Where(g => (g.ParentGameId != null) == dlc);
+            request = _filterService.FilterByAvailabilityOfDLC(request, dlc.Value);
         }
 
         if (!indexDLCs)
         {
-            request = request.Where(g => g.ParentGameId == null);
+            request = _filterService.FilterOutDLCs(request);
         }
 
         request = ordering switch
@@ -133,7 +134,7 @@ public class AppController : Controller
             publishers.Select(p => new FilterDto(p.Id, p.Name)).ToList());
     }
 
-    private static bool TryParseStringToIntArray(string value, out int[] result)
+    private static bool TryParseStringToIntArray(string? value, out int[] result)
     {
         if (string.IsNullOrEmpty(value))
         {
