@@ -52,10 +52,27 @@ else
                     <a class="btn btn-warning w-100" asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                 </td>
                 <td>
-                    <form method="post" asp-action="Delete">
-                        <input hidden name="Id" value="@item.Id" />
-                        <button class="btn btn-danger w-100" type="submit" @(item.DLCs.Count != 0 ? "disabled" : "")>Delete</button>
-                    </form>
+                    <button class="btn btn-danger w-100" type="button" data-bs-toggle="modal" data-bs-target="#Delete_@item.Id" @(item.DLCs.Count != 0 ? "disabled" : "")>Delete</button>
+                    <div class="modal fade" id="Delete_@item.Id" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5">Confirmation</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <span>Do you really want to delete @item.Title?</span>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <form method="post" asp-action="Delete">
+                                        <input hidden name="Id" value="@item.Id" />
+                                        <button class="btn btn-danger w-100" type="submit">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </td>
             </tr>
         }
