@@ -1,6 +1,4 @@
-﻿using Azure.Core;
-
-namespace GamesCatalog.Server.Services;
+﻿namespace GamesCatalog.Server.Services;
 
 public class GamesQueryService : IGamesQueryService
 {

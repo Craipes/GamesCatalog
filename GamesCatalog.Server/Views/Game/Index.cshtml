@@ -54,7 +54,7 @@ else
                 <td>
                     <form method="post" asp-action="Delete">
                         <input hidden name="Id" value="@item.Id" />
-                        <button class="btn btn-danger w-100" type="submit">Delete</button>
+                        <button class="btn btn-danger w-100" type="submit" @(item.DLCs.Count != 0 ? "disabled" : "")>Delete</button>
                     </form>
                 </td>
             </tr>
