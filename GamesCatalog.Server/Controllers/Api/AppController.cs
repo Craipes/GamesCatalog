@@ -23,11 +23,13 @@ public class AppController : Controller
             .Include(g => g.Developer)
             .Include(g => g.Tags)
             .Include(g => g.Platforms)
-            .Include(g => g.CatalogsLinks);
+            .Include(g => g.CatalogsLinks)
+                .ThenInclude(l => l.Catalog);
 
         if (!string.IsNullOrEmpty(search))
         {
-            request = request.Where(g => g.Title.Contains(search));
+            search = search.ToUpper();
+            request = request.Where(g => g.Title.ToUpper().Contains(search));
         }
         if (!string.IsNullOrEmpty(tags))
         {
@@ -99,7 +101,7 @@ public class AppController : Controller
             .Include(g => g.Developer)
             .Include(g => g.Tags)
             .Include(g => g.Platforms)
-            .Include(g => g.CatalogsLinks)
+            .Include(g => g.CatalogsLinks).ThenInclude(l => l.Catalog)
 
             .Include(g => g.DLCs).ThenInclude(g => g.Publisher)
             .Include(g => g.DLCs).ThenInclude(g => g.Developer)
