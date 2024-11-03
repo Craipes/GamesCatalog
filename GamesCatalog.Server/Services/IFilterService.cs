@@ -2,6 +2,7 @@
 
 public interface IFilterService
 {
+    public IQueryable<Game> FilterByTitle(IQueryable<Game> games, string title, bool caseInsensetive);
     public IQueryable<Game> FilterByTags(IQueryable<Game> games, IEnumerable<int> tags);
     public IQueryable<Game> FilterByPlatforms(IQueryable<Game> games, IEnumerable<int> platforms);
     public IQueryable<Game> FilterByCatalogs(IQueryable<Game> games, IEnumerable<int> catalogs);

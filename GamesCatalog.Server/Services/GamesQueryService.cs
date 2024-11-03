@@ -12,7 +12,7 @@ public class GamesQueryService : IGamesQueryService
     public IQueryable<Game> GetGamesQuery()
     {
         return _context.Games
-            //.AsNoTracking()
+            .AsNoTracking()
             .Include(g => g.Developer)
             .Include(g => g.Publisher)
             .Include(g => g.Platforms)

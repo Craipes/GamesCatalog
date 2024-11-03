@@ -2,6 +2,16 @@
 
 public class FilterService : IFilterService
 {
+    public IQueryable<Game> FilterByTitle(IQueryable<Game> games, string title, bool caseInsensetive)
+    {
+        if (caseInsensetive)
+        {
+            title = title.ToUpper();
+            return games.Where(g => g.Title.ToUpper().Contains(title));
+        }
+        return games.Where(g => g.Title.Contains(title));
+    }
+
     public IQueryable<Game> FilterByTags(IQueryable<Game> games, IEnumerable<int> tags)
     {
         return games.Where(g => tags.All(t => g.Tags.Any(a => a.Id == t)));

@@ -36,8 +36,7 @@ public class AppController : Controller
 
         if (!string.IsNullOrEmpty(search))
         {
-            search = search.ToUpper();
-            request = request.Where(g => g.Title.ToUpper().Contains(search));
+            request = _filterService.FilterByTitle(request, search, true);
         }
         if (TryParseStringToIntArray(tags, out var tagsList))
         {
