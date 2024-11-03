@@ -1,115 +1,102 @@
-﻿namespace GamesCatalog.Server.Controllers.Api;
+﻿using GamesCatalog.Server.Services;
+
+namespace GamesCatalog.Server.Controllers.Api;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AppController : Controller
 {
+    private const int MinRating = 0;
+    private const int MaxRating = 100;
+    private const int MinYear = 0;
+    private const int MaxYear = 10000;
+    private const double MinPrice = 0;
+    private const double MaxPrice = 1000000;
+
+    private readonly IFilterService _filterService;
+    private readonly IGamesQueryService _gamesQueryService;
+
     private readonly GamesDbContext _context;
 
-    public AppController(GamesDbContext context)
+    public AppController(IFilterService filterService, IGamesQueryService gamesQueryService, GamesDbContext context)
     {
+        _filterService = filterService;
+        _gamesQueryService = gamesQueryService;
         _context = context;
     }
 
     [HttpGet("search")]
     public async Task<IEnumerable<GameDto>> Search([FromQuery] string? search = null, [FromQuery] string? tags = null, [FromQuery] string? platforms = null,
         [FromQuery] string? catalogs = null, [FromQuery] string? developers = null, [FromQuery] string? publishers = null, [FromQuery] OrderingType ordering = OrderingType.Default,
-        [FromQuery] int minRating = 0, [FromQuery] int maxRating = 100, [FromQuery] int minYear = 0, [FromQuery] int maxYear = 10000, [FromQuery] bool? dlc = null,
-        [FromQuery] double minPrice = 0, [FromQuery] double maxPrice = 1000000, [FromQuery] bool? isReleased = null, [FromQuery] bool indexDLCs = false,
+        [FromQuery] int minRating = MinRating - 1, [FromQuery] int maxRating = MaxRating + 1, [FromQuery] int minYear = MinYear - 1, [FromQuery] int maxYear = MaxYear + 1, [FromQuery] bool? dlc = null,
+        [FromQuery] double minPrice = MinPrice - 1, [FromQuery] double maxPrice = MaxPrice + 1, [FromQuery] bool? isReleased = null, [FromQuery] bool indexDLCs = false,
         [FromQuery] int gamesPerPage = 12, [FromQuery] int page = 1)
     {
-        IQueryable<Game> request = _context.Games
-            .Include(g => g.Publisher)
-            .Include(g => g.Developer)
-            .Include(g => g.Tags)
-            .Include(g => g.Platforms)
-            .Include(g => g.CatalogsLinks);
+        var request = _gamesQueryService.GetGamesQuery();
 
         if (!string.IsNullOrEmpty(search))
         {
-            request = request.Where(g => g.Title.Contains(search));
+            request = _filterService.FilterByTitle(request, search, true);
         }
-        if (!string.IsNullOrEmpty(tags))
+        if (TryParseStringToIntArray(tags, out var tagsList))
         {
-            if (TryParseStringToIntArray(tags, out var tagsList))
-                request = request.Where(g => tagsList.All(t => g.Tags.Any(a => a.Id == t)));
+            request = _filterService.FilterByTags(request, tagsList);
         }
-        if (!string.IsNullOrEmpty(platforms))
+        if (TryParseStringToIntArray(platforms, out var platformsList))
         {
-            if (TryParseStringToIntArray(platforms, out var platformsList))
-                request = request.Where(g => g.Platforms.Any(p => platformsList.Contains(p.Id)));
+            request = _filterService.FilterByPlatforms(request, platformsList);
         }
-        if (!string.IsNullOrEmpty(catalogs))
+        if (TryParseStringToIntArray(catalogs, out var catalogsList))
         {
-            if (TryParseStringToIntArray(catalogs, out var catalogsList))
-                request = request.Where(g => g.CatalogsLinks.Any(c => catalogsList.Contains(c.CatalogId)));
+            request = _filterService.FilterByCatalogs(request, catalogsList);
         }
-        if (!string.IsNullOrEmpty(developers))
+        if (TryParseStringToIntArray(developers, out var developersList))
         {
-            if (TryParseStringToIntArray(developers, out var developersList))
-                request = request.Where(g => developersList.Contains(g.DeveloperId ?? 0));
+            request = _filterService.FilterByDevelopers(request, developersList);
         }
-        if (!string.IsNullOrEmpty(publishers))
+        if (TryParseStringToIntArray(publishers, out var publishersList))
         {
-            if (TryParseStringToIntArray(publishers, out var publishersList))
-                request = request.Where(g => publishersList.Contains(g.PublisherId ?? 0));
+            request = _filterService.FilterByPublishers(request, publishersList);
         }
-        request = request.Where(g => g.Rating >= minRating && g.Rating <= maxRating);
-        request = request.Where(g => g.YearOfRelease >= minYear && g.YearOfRelease <= maxYear);
-        request = request.Where(g => g.Price >= minPrice && g.Price <= maxPrice);
+
+        if (minRating <= maxRating && (minRating >= MinRating || maxRating <= MaxRating))
+        {
+            request = _filterService.FilterByRating(request, minRating, maxRating);
+        }
+        if (minYear <= maxYear && (minYear >= MinYear || maxYear <= MaxYear))
+        {
+            request = _filterService.FilterByYear(request, minYear, maxYear);
+        }
+        if (minPrice <= maxPrice && (minPrice >= MinPrice || maxPrice <= MaxPrice))
+        {
+            request = _filterService.FilterByPrice(request, minPrice, maxPrice);
+        }
 
         if (isReleased != null)
         {
-            request = request.Where(g => g.IsReleased == isReleased);
+            request = _filterService.FilterByReleaseStatus(request, isReleased.Value);
         }
         if (dlc != null)
         {
-            request = request.Where(g => (g.ParentGameId != null) == dlc);
+            request = _filterService.FilterByAvailabilityOfDLC(request, dlc.Value);
         }
 
         if (!indexDLCs)
         {
-            request = request.Where(g => g.ParentGameId == null);
+            request = _filterService.FilterOutDLCs(request);
         }
 
-        request = ordering switch
-        {
-            OrderingType.TitleAsc => request.OrderBy(g => g.Title),
-            OrderingType.TitleDesc => request.OrderByDescending(g => g.Title),
-            OrderingType.YearAsc => request.OrderBy(g => g.YearOfRelease),
-            OrderingType.YearDesc => request.OrderByDescending(g => g.YearOfRelease),
-            OrderingType.RatingAsc => request.OrderBy(g => g.Rating),
-            OrderingType.RatingDesc => request.OrderByDescending(g => g.Rating),
-            _ => request
-        };
+        request = _gamesQueryService.Order(request, ordering);
+        request = _gamesQueryService.Paginate(request, gamesPerPage, page);
 
-        gamesPerPage = Math.Max(1, gamesPerPage);
-        page = Math.Max(1, page);
-        request = request.Skip((page - 1) * gamesPerPage).Take(gamesPerPage);
-
-        var games = await request.AsNoTracking().ToListAsync();
+        var games = await request.ToListAsync();
         return games.Select(GameDto.FromGame);
     }
 
     [HttpGet("game/{id}")]
     public async Task<GameDto?> GetGame(int id)
     {
-        var game = await _context.Games
-            .Include(g => g.Publisher)
-            .Include(g => g.Developer)
-            .Include(g => g.Tags)
-            .Include(g => g.Platforms)
-            .Include(g => g.CatalogsLinks)
-
-            .Include(g => g.DLCs).ThenInclude(g => g.Publisher)
-            .Include(g => g.DLCs).ThenInclude(g => g.Developer)
-            .Include(g => g.DLCs).ThenInclude(g => g.Tags)
-            .Include(g => g.DLCs).ThenInclude(g => g.Platforms)
-            .Include(g => g.DLCs).ThenInclude(g => g.CatalogsLinks)
-
-            .AsNoTracking()
-            .FirstOrDefaultAsync(g => g.Id == id);
-
+        var game = await _gamesQueryService.GetGamesWithDLCsQuery().FirstOrDefaultAsync(g => g.Id == id);
         return game == null ? null : GameDto.FromGame(game);
     }
 
@@ -131,12 +118,12 @@ public class AppController : Controller
             publishers.Select(p => new FilterDto(p.Id, p.Name)).ToList());
     }
 
-    private static bool TryParseStringToIntArray(string value, out int[] result)
+    private static bool TryParseStringToIntArray(string? value, out int[] result)
     {
         if (string.IsNullOrEmpty(value))
         {
             result = [];
-            return true;
+            return false;
         }
         var values = value.Split(',');
         result = new int[values.Length];

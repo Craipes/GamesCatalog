@@ -243,12 +243,12 @@ public class GameController : Controller
     public IActionResult Delete(int id)
     {
         var game = _context.Games.Find(id);
-        if (game != null)
+        if (game != null && !_context.Games.Any(g => g.ParentGameId == game.Id))
         {
             _context.Remove(game);
             _context.SaveChanges();
         }
-        return RedirectToAction("Index");
+        return RedirectToAction(nameof(Index));
     }
 
     private SelectList GetCompaniesSelectList()
