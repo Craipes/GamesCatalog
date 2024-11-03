@@ -6,6 +6,13 @@ namespace GamesCatalog.Server.Controllers.Api;
 [Route("api/[controller]")]
 public class AppController : Controller
 {
+    private const int MinRating = 0;
+    private const int MaxRating = 100;
+    private const int MinYear = 0;
+    private const int MaxYear = 10000;
+    private const double MinPrice = 0;
+    private const double MaxPrice = 1000000;
+
     private readonly IFilterService _filterService;
     private readonly IGamesQueryService _gamesQueryService;
 
@@ -21,8 +28,8 @@ public class AppController : Controller
     [HttpGet("search")]
     public async Task<IEnumerable<GameDto>> Search([FromQuery] string? search = null, [FromQuery] string? tags = null, [FromQuery] string? platforms = null,
         [FromQuery] string? catalogs = null, [FromQuery] string? developers = null, [FromQuery] string? publishers = null, [FromQuery] OrderingType ordering = OrderingType.Default,
-        [FromQuery] int minRating = 0, [FromQuery] int maxRating = 100, [FromQuery] int minYear = 0, [FromQuery] int maxYear = 10000, [FromQuery] bool? dlc = null,
-        [FromQuery] double minPrice = 0, [FromQuery] double maxPrice = 1000000, [FromQuery] bool? isReleased = null, [FromQuery] bool indexDLCs = false,
+        [FromQuery] int minRating = MinRating - 1, [FromQuery] int maxRating = MaxRating + 1, [FromQuery] int minYear = MinYear - 1, [FromQuery] int maxYear = MaxYear + 1, [FromQuery] bool? dlc = null,
+        [FromQuery] double minPrice = MinPrice - 1, [FromQuery] double maxPrice = MaxPrice + 1, [FromQuery] bool? isReleased = null, [FromQuery] bool indexDLCs = false,
         [FromQuery] int gamesPerPage = 12, [FromQuery] int page = 1)
     {
         var request = _gamesQueryService.GetGamesQuery();
@@ -53,9 +60,18 @@ public class AppController : Controller
             request = _filterService.FilterByPublishers(request, publishersList);
         }
 
-        request = _filterService.FilterByRating(request, minRating, maxRating);
-        request = _filterService.FilterByYear(request, minYear, maxYear);
-        request = _filterService.FilterByPrice(request, minPrice, maxPrice);
+        if (minRating <= maxRating && (minRating >= MinRating || maxRating <= MaxRating))
+        {
+            request = _filterService.FilterByRating(request, minRating, maxRating);
+        }
+        if (minYear <= maxYear && (minYear >= MinYear || maxYear <= MaxYear))
+        {
+            request = _filterService.FilterByYear(request, minYear, maxYear);
+        }
+        if (minPrice <= maxPrice && (minPrice >= MinPrice || maxPrice <= MaxPrice))
+        {
+            request = _filterService.FilterByPrice(request, minPrice, maxPrice);
+        }
 
         if (isReleased != null)
         {
