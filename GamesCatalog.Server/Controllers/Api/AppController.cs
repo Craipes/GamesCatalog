@@ -86,19 +86,7 @@ public class AppController : Controller
             request = _filterService.FilterOutDLCs(request);
         }
 
-        request = ordering switch
-        {
-            OrderingType.TitleAsc => request.OrderBy(g => g.Title),
-            OrderingType.TitleDesc => request.OrderByDescending(g => g.Title),
-            OrderingType.YearAsc => request.OrderBy(g => g.YearOfRelease),
-            OrderingType.YearDesc => request.OrderByDescending(g => g.YearOfRelease),
-            OrderingType.RatingAsc => request.OrderBy(g => g.Rating),
-            OrderingType.RatingDesc => request.OrderByDescending(g => g.Rating),
-            _ => request
-        };
-
-        gamesPerPage = Math.Max(1, gamesPerPage);
-        page = Math.Max(1, page);
+        request = _gamesQueryService.Order(request, ordering);
         request = _gamesQueryService.Paginate(request, gamesPerPage, page);
 
         var games = await request.ToListAsync();

@@ -1,4 +1,6 @@
-﻿namespace GamesCatalog.Server.Services;
+﻿using Azure.Core;
+
+namespace GamesCatalog.Server.Services;
 
 public class GamesQueryService : IGamesQueryService
 {
@@ -33,6 +35,22 @@ public class GamesQueryService : IGamesQueryService
 
     public IQueryable<Game> Paginate(IQueryable<Game> query, int gamesPerPage, int page)
     {
+        gamesPerPage = Math.Max(1, gamesPerPage);
+        page = Math.Max(1, page);
         return query.Skip((page - 1) * gamesPerPage).Take(gamesPerPage);
+    }
+
+    public IQueryable<Game> Order(IQueryable<Game> query, OrderingType ordering)
+    {
+        return ordering switch
+        {
+            OrderingType.TitleAsc => query.OrderBy(g => g.Title),
+            OrderingType.TitleDesc => query.OrderByDescending(g => g.Title),
+            OrderingType.YearAsc => query.OrderBy(g => g.YearOfRelease),
+            OrderingType.YearDesc => query.OrderByDescending(g => g.YearOfRelease),
+            OrderingType.RatingAsc => query.OrderBy(g => g.Rating),
+            OrderingType.RatingDesc => query.OrderByDescending(g => g.Rating),
+            _ => query
+        };
     }
 }
