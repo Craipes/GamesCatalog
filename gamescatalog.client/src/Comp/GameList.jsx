@@ -39,7 +39,7 @@ function GameList({ url }) {
               </Fade>
             ))
           ) : (
-            <p>No games found</p>
+            <p>Нічого не знайдено :(</p>
           )}
         </div>
       </ScrollArea>

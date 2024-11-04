@@ -60,28 +60,28 @@ export default function TransitionsModal({ open, handleClose, game }) {
             {game.title}
           </Typography>
           <Typography id="game-modal-description" sx={{ mt: 2 }}>
-            <strong>Release Year:</strong> {game.yearOfRelease} <br />
-            <strong>Rating:</strong> ({game.rating}/100) <br />
-            <strong>Price:</strong> ${game.price} <br />
-            <strong>Description:</strong> {game.description} <br />
-            <strong>Requirements:</strong> {game.requirements} <br />
-            <strong>Developer:</strong> {game.developer} <br />
-            <strong>Publisher:</strong> {game.publisher} <br />
+            <strong>Рік випуску:</strong> {game.yearOfRelease} <br />
+            <strong>Рейтинг:</strong> ({game.rating}/100) <br />
+            <strong>Ціна:</strong> ${game.price} <br />
+            <strong>Опис:</strong> {game.description} <br />
+            <strong>Вимог:</strong> {game.requirements} <br />
+            <strong>Розробник:</strong> {game.developer} <br />
+            <strong>Видавець:</strong> {game.publisher} <br />
           </Typography>
 
           {/* Tags */}
           <Typography sx={{ mt: 3 }}>
-            <strong>Tags:</strong> {game.tags.join(', ')}
+            <strong>Теги:</strong> {game.tags.join(', ')}
           </Typography>
 
           {/* Platforms */}
           <Typography sx={{ mt: 2 }}>
-            <strong>Platforms:</strong> {game.platforms.join(', ')}
+            <strong>Платформи:</strong> {game.platforms.join(', ')}
           </Typography>
 
           {/* Catalog Links */}
           <Typography sx={{ mt: 2 }}>
-            <strong>Available in Catalogs:</strong> 
+            <strong>Доступно на:</strong> 
             <ul>
               {game.catalogsLinks.map((catalog, index) => (
                 <li key={index}>
