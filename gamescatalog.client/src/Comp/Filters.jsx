@@ -109,8 +109,8 @@ function Filters({ onApplyFilters }) {
 
   return (
     <div>
-      <h2 className="text-[30px] font-bold sm:hidden md:hidden">Фільтри</h2>
-      <ScrollArea className="h-[960px] w-[350px] rounded-md p-4">
+      <ScrollArea className="h-screen w-[350px] rounded-md p-4">
+      <h2 className="text-[30px] font-bold ">Фільтри</h2>
         <div className="px-4 ">
           {/* Сортування */}
           <section>
@@ -253,17 +253,13 @@ function Filters({ onApplyFilters }) {
               </Fade>
             ))}
           </section>
-{         <div className="min-[1080px]:hidden flex space-x-4 mt-4">
+{         <div className=" flex space-x-4 mt-4">
         <Button onClick={handleApplyFilters}>Застосувати</Button>
         <Button onClick={handleResetFilters}>Скинути</Button>
       </div>}
       <div className='mb-16'></div>
         </div>
       </ScrollArea>
-    <div className="justify-center flex space-x-4 mt-4 ">
-        <Button onClick={handleApplyFilters}>Застосувати</Button>
-        <Button onClick={handleResetFilters}>Скинути</Button>
-      </div>
     </div>
   );
 }
