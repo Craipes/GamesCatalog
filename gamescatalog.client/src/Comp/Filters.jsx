@@ -255,7 +255,7 @@ function Filters({ onApplyFilters }) {
           </section>
         </div>
       </ScrollArea>
-      <div className="flex space-x-4 mt-4">
+      <div className="flex space-x-4 mt-4 mb-6">
         <Button onClick={handleApplyFilters}>Застосувати</Button>
         <Button onClick={handleResetFilters}>Скинути</Button>
       </div>

@@ -31,7 +31,7 @@ function GameList({ url }) {
   return (
     <>
       <ScrollArea className="h-screen rounded-md pl-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 px-6 pt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 min-[1350px]:grid-cols-4 gap-6 px-6 pt-4">
           {games.length > 0 ? (
             games.map((game, index) => (
               <Fade>
@@ -42,6 +42,7 @@ function GameList({ url }) {
             <p>Нічого не знайдено :(</p>
           )}
         </div>
+        <div className='mb-24'></div>
       </ScrollArea>
 
       {selectedGame && (
