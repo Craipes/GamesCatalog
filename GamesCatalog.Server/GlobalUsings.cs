@@ -6,4 +6,3 @@ global using Microsoft.EntityFrameworkCore;
 
 global using GamesCatalog.Server.Data;
 global using GamesCatalog.Server.ViewModels;
-global using GamesCatalog.Server.Attributes;
