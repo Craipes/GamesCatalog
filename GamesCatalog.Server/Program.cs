@@ -24,7 +24,7 @@ builder.Services.AddScoped<IFilterService, FilterService>();
 builder.Services.AddScoped<IGamesQueryService, GamesQueryService>();
 
 var app = builder.Build();
-
+app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:5173"));
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
