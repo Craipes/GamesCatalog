@@ -33,14 +33,14 @@ function Home({ searchQuery }) {
   }, [searchQuery]);
 
   return (
-    <div className="mx-3">
+    <div className="mx-3 sm:mx-1">
       {isFiltersOpen && (
         <div 
           className="fixed inset-0 z-10 flex justify-start items-center bg-black bg-opacity-50"
           onClick={() => setIsFiltersOpen(false)} 
         >
           <div 
-            className="bg-white w-11/12 max-w-md p-4 rounded-lg shadow-lg overflow-y-auto"
+            className="bg-white w-11/12 max-w-sm p-4 rounded-lg shadow-lg overflow-y-auto"
             onClick={(e) => e.stopPropagation()} 
           >
             <button
