@@ -24,7 +24,7 @@ function Filters({ onApplyFilters }) {
     minPrice: 0,
     maxPrice: 1000,
     isReleased: true,
-    indexDLCs: true,
+    indexDLCs: false,
     gamesPerPage: 12,
     page: 1,
   };
@@ -131,7 +131,7 @@ function Filters({ onApplyFilters }) {
           <section>
             <h3 className="text-[20px] font-bold mt-4">DLC</h3>
             <RadioGroup value={selectedFilters.dlc === null ? '0' : selectedFilters.dlc ? '1' : '2'} onValueChange={(value) => handleRadioChange('dlc', value === '0' ? null : value === '1')}>
-              {['Шукати всі', 'Тільки DLC', 'Без DLC'].map((label, index) => (
+              {['Шукати всі', 'Тільки з DLC', 'Без DLC'].map((label, index) => (
                 <Fade key={index}>
                   <label className="flex items-center space-x-2">
                     <RadioGroupItem value={index.toString()} />
