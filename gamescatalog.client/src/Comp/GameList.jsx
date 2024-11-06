@@ -4,13 +4,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import TransitionsModal from './TransitionModal';
 import { Button } from '@/components/ui/button';
 import { Fade } from 'react-awesome-reveal';
-import { Badge } from '@/components/ui/badge';
 
-function GameList({ url, setCurrentPage }) {
+
+function GameList({ url, setCurrentPage, currentPage }) {
   const [games, setGames] = useState([]);
   const [selectedGame, setSelectedGame] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentPage, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(true);
 
   const gamesPerPage = 8;
@@ -26,7 +25,7 @@ function GameList({ url, setCurrentPage }) {
   };
 
   useEffect(() => {
-    fetchGames(currentPage);
+    fetchGames();
   }, [url]);
 
   const handleGameClick = (gameId) => {
@@ -41,14 +40,12 @@ function GameList({ url, setCurrentPage }) {
 
   const handleNextPage = () => {
     if (hasNextPage) {
-      setPage((prev) => prev + 1);
       setCurrentPage((prev) => prev + 1); 
     }
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
-      setPage((prev) => prev - 1);
       setCurrentPage((prev) => prev - 1); 
     }
   };
