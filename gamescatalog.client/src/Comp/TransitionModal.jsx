@@ -6,21 +6,22 @@ import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { CarouselNext, CarouselPrevious, CarouselItem, CarouselContent, Carousel } from '@/components/ui/carousel';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function TransitionsModal({ open, handleClose, game }) {
   if (!game) return null;
 
-  // Перевірка ширини екрана для адаптивних стилів
   const isSmallScreen = useMediaQuery('(max-width:600px)');
   const isMediumScreen = useMediaQuery('(max-width:900px)');
 
-  // Стиль модального вікна
+
   const modalStyle = {
     position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: isSmallScreen ? '90%' : isMediumScreen ? '80%' : 1000,
+    height: '80vh',
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
@@ -40,8 +41,8 @@ export default function TransitionsModal({ open, handleClose, game }) {
       }}
     >
       <Fade in={open}>
-        <Box sx={modalStyle}>
-          <Typography sx={{ mt: 2 }}>
+        <Box sx={modalStyle} className='flex flex-col'>
+          <Typography sx={{ mt: 2, mb: 2 }}>
             <Carousel>
               <CarouselContent>
                 {game.contentUrls.map((url, index) => (
@@ -67,43 +68,118 @@ export default function TransitionsModal({ open, handleClose, game }) {
               )}
             </Carousel>
           </Typography>
+          <ScrollArea className='flex-1'>
+            <Typography id="game-modal-title" variant="h4" component="h2" gutterBottom>
+              {game.title}
+            </Typography>
+            <Typography id="game-modal-description" sx={{ mt: 2 }}>
+              <strong>Рік випуску:</strong> {game.yearOfRelease} <br />
+              <strong>Рейтинг:</strong> ({game.rating}/100) <br />
+              <strong>Ціна:</strong> ${game.price} <br />
+              <strong>Опис:</strong> {game.description} <br />
+              <strong>Вимоги:</strong> {game.requirements} <br />
+              <strong>Розробник:</strong> {game.developer} <br />
+              <strong>Видавець:</strong> {game.publisher} <br />
+            </Typography>
 
-          <Typography id="game-modal-title" variant="h4" component="h2" gutterBottom>
-            {game.title}
-          </Typography>
-          <Typography id="game-modal-description" sx={{ mt: 2 }}>
-            <strong>Рік випуску:</strong> {game.yearOfRelease} <br />
-            <strong>Рейтинг:</strong> ({game.rating}/100) <br />
-            <strong>Ціна:</strong> ${game.price} <br />
-            <strong>Опис:</strong> {game.description} <br />
-            <strong>Вимоги:</strong> {game.requirements} <br />
-            <strong>Розробник:</strong> {game.developer} <br />
-            <strong>Видавець:</strong> {game.publisher} <br />
-          </Typography>
+            {/* Tags */}
+            <Typography sx={{ mt: 3 }}>
+              <strong>Теги:</strong> {game.tags.join(', ')}
+            </Typography>
 
-          {/* Tags */}
-          <Typography sx={{ mt: 3 }}>
-            <strong>Теги:</strong> {game.tags.join(', ')}
-          </Typography>
+            {/* Platforms */}
+            <Typography sx={{ mt: 2 }}>
+              <strong>Платформи:</strong> {game.platforms.join(', ')}
+            </Typography>
 
-          {/* Platforms */}
-          <Typography sx={{ mt: 2 }}>
-            <strong>Платформи:</strong> {game.platforms.join(', ')}
-          </Typography>
+            {/* Catalog Links */}
+            <Typography sx={{ mt: 2 }}>
+              <strong>Доступно на:</strong>
+              <ul>
+                {game.catalogsLinks.map((catalog, index) => (
+                  <li key={index}>
+                    <a href={catalog.url} target="_blank" rel="noopener noreferrer">
+                      {catalog.title || 'Link'}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </Typography>
+            {game.dlCs.length > 0 && 
+             <Typography sx={{mt: 2}}>
+             <strong>DLCs:</strong> {game.dlCs.map((game) => game.title).join(', ')}
+             {game.dlCs.map((game) =>
+             (
+               <div>
+                 <Typography sx={{ mt: 2, mb: 2 }}>
+                   <Carousel className='w-10/12 mx-auto'>
+                     <CarouselContent>
+                       {game.contentUrls.map((url, index) => (
+                         <CarouselItem className="basis-1/2" key={index}>
+                           <img
+                             src={url}
+                             alt={`${game.title} image ${index + 1}`}
+                             style={{
+                               width: isSmallScreen ? '100%' : '500px',
+                               height: isSmallScreen ? '250px' : '400px',
+                               objectFit: 'cover',
+                               borderRadius: '8px',
+                             }}
+                           />
+                         </CarouselItem>
+                       ))}
+                     </CarouselContent>
+                     {game.contentUrls.length > 1 && (
+                       <>
+                         <CarouselPrevious />
+                         <CarouselNext />
+                       </>
+                     )}
+                   </Carousel>
+                 </Typography>
+                 <Typography id="game-modal-title" variant="h4" component="h2" gutterBottom>
+                   {game.title}
+                 </Typography>
+                 <Typography id="game-modal-description" sx={{ mt: 2 }}>
+                   <strong>Рік випуску:</strong> {game.yearOfRelease} <br />
+                   <strong>Рейтинг:</strong> ({game.rating}/100) <br />
+                   <strong>Ціна:</strong> ${game.price} <br />
+                   <strong>Опис:</strong> {game.description} <br />
+                   <strong>Вимоги:</strong> {game.requirements} <br />
+                   <strong>Розробник:</strong> {game.developer} <br />
+                   <strong>Видавець:</strong> {game.publisher} <br />
+                 </Typography>
 
-          {/* Catalog Links */}
-          <Typography sx={{ mt: 2 }}>
-            <strong>Доступно на:</strong> 
-            <ul>
-              {game.catalogsLinks.map((catalog, index) => (
-                <li key={index}>
-                  <a href={catalog.url} target="_blank" rel="noopener noreferrer">
-                    {catalog.title || 'Link'}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </Typography>
+                 {/* Tags */}
+                 <Typography sx={{ mt: 3 }}>
+                   <strong>Теги:</strong> {game.tags.join(', ')}
+                 </Typography>
+
+                 {/* Platforms */}
+                 <Typography sx={{ mt: 2 }}>
+                   <strong>Платформи:</strong> {game.platforms.join(', ')}
+                 </Typography>
+
+                 {/* Catalog Links */}
+                 <Typography sx={{ mt: 2 }}>
+                   <strong>Доступно на:</strong>
+                   <ul>
+                     {game.catalogsLinks.map((catalog, index) => (
+                       <li key={index}>
+                         <a href={catalog.url} target="_blank" rel="noopener noreferrer">
+                           {catalog.title || 'Link'}
+                         </a>
+                       </li>
+                     ))}
+                   </ul>
+                 </Typography>
+               </div>
+             )
+             )}
+           </Typography>
+            }
+           
+          </ScrollArea>
         </Box>
       </Fade>
     </Modal>

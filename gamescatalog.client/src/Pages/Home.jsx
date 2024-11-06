@@ -7,14 +7,16 @@ function Home({ searchQuery }) {
   const [url, setUrl] = useState('https://localhost:7200/api/App/search');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedFilters, setSelectedFilters] = useState({});
 
-  const applyFilters = (selectedFilters) => {
+  const applyFilters = (filters) => {
+    setSelectedFilters(filters); 
     const queryParams = new URLSearchParams();
 
     if (searchQuery) queryParams.append('search', searchQuery);
 
-    Object.keys(selectedFilters).forEach((key) => {
-      const value = selectedFilters[key];
+    Object.keys(filters).forEach((key) => {
+      const value = filters[key];
       if (Array.isArray(value) && value.length > 0) {
         queryParams.append(key, value.join(','));
       } else if (!Array.isArray(value) && value !== null && value !== '') {
@@ -22,16 +24,15 @@ function Home({ searchQuery }) {
       }
     });
 
-    // Append pagination params last
     queryParams.set('page', currentPage);
-    queryParams.set('gamesPerPage', selectedFilters.gamesPerPage || 8);
+    queryParams.set('gamesPerPage', filters.gamesPerPage || 8);
 
     setUrl(`https://localhost:7200/api/App/search?${queryParams.toString()}`);
   };
 
   useEffect(() => {
-    applyFilters({});
-  }, [searchQuery, currentPage]);
+    applyFilters(selectedFilters); 
+  }, [searchQuery, currentPage]); // Залежність від поточної сторінки та пошуку
 
   return (
     <div className="mx-3 sm:mx-1">
@@ -64,10 +65,13 @@ function Home({ searchQuery }) {
         </button>
 
         <div className="hidden min-[1100px]:block">
-          <Filters onApplyFilters={(filters) => applyFilters(filters)} />
+          <Filters onApplyFilters={(filters) => {
+            setCurrentPage(1); 
+            applyFilters(filters);
+          }} />
         </div>
 
-        <GameList url={url} setCurrentPage={setCurrentPage} />
+        <GameList url={url} setCurrentPage={setCurrentPage} currentPage={currentPage} />
       </div>
     </div>
   );
