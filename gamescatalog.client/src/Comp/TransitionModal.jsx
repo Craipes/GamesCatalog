@@ -76,7 +76,7 @@ export default function TransitionsModal({ open, handleClose, game }) {
             <strong>Рейтинг:</strong> ({game.rating}/100) <br />
             <strong>Ціна:</strong> ${game.price} <br />
             <strong>Опис:</strong> {game.description} <br />
-            <strong>Вимог:</strong> {game.requirements} <br />
+            <strong>Вимоги:</strong> {game.requirements} <br />
             <strong>Розробник:</strong> {game.developer} <br />
             <strong>Видавець:</strong> {game.publisher} <br />
           </Typography>

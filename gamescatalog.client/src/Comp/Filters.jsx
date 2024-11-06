@@ -167,7 +167,7 @@ function Filters({ onApplyFilters }) {
                 value={[selectedFilters.minPrice, selectedFilters.maxPrice]}
                 onChange={handlePriceChange}
                 min={0}
-                max={1000}
+                max={150}
                 valueLabelDisplay="auto"
               />
             </Fade>
