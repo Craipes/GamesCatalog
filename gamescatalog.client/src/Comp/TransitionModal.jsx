@@ -106,13 +106,13 @@ export default function TransitionsModal({ open, handleClose, game }) {
               </ul>
             </Typography>
             {game.dlCs.length > 0 && 
-             <Typography>
+             <Typography sx={{mt: 2}}>
              <strong>DLCs:</strong> {game.dlCs.map((game) => game.title).join(', ')}
              {game.dlCs.map((game) =>
              (
                <div>
                  <Typography sx={{ mt: 2, mb: 2 }}>
-                   <Carousel>
+                   <Carousel className='w-10/12 mx-auto'>
                      <CarouselContent>
                        {game.contentUrls.map((url, index) => (
                          <CarouselItem className="basis-1/2" key={index}>
