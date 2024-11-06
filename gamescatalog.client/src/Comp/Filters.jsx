@@ -22,10 +22,10 @@ function Filters({ onApplyFilters }) {
     maxYear: 2024,
     dlc: null, 
     minPrice: 0,
-    maxPrice: 1000,
+    maxPrice: 150,
     isReleased: true,
     indexDLCs: false,
-    gamesPerPage: 12,
+    gamesPerPage: 8,
     page: 1,
   };
 
