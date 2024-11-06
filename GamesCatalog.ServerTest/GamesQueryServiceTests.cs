@@ -1,7 +1,8 @@
 using GamesCatalog.Server.Data;
+using GamesCatalog.Server.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace GamesCatalog.Server.Services.Tests
+namespace GamesCatalog.ServerTest
 {
     [TestFixture]
     public class GamesQueryServiceTests

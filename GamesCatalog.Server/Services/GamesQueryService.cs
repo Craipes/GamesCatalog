@@ -28,7 +28,7 @@ public class GamesQueryService : IGamesQueryService
             .Include(g => g.DLCs).ThenInclude(g => g.Developer)
             .Include(g => g.DLCs).ThenInclude(g => g.Tags)
             .Include(g => g.DLCs).ThenInclude(g => g.Platforms)
-            .Include(g => g.DLCs).ThenInclude(g => g.CatalogsLinks);
+            .Include(g => g.DLCs).ThenInclude(g => g.CatalogsLinks).ThenInclude(l => l.Catalog);
     }
 
     public IQueryable<Game> Paginate(IQueryable<Game> query, int gamesPerPage, int page)
