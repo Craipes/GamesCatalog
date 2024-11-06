@@ -22,10 +22,10 @@ function Filters({ onApplyFilters }) {
     maxYear: 2024,
     dlc: null, 
     minPrice: 0,
-    maxPrice: 1000,
+    maxPrice: 150,
     isReleased: true,
-    indexDLCs: true,
-    gamesPerPage: 12,
+    indexDLCs: false,
+    gamesPerPage: 8,
     page: 1,
   };
 
@@ -109,9 +109,9 @@ function Filters({ onApplyFilters }) {
 
   return (
     <div>
-      <h2 className="text-[30px] font-bold">Фільтри</h2>
-      <ScrollArea className="h-[940px] w-[350px] rounded-md p-4">
-        <div className="px-4">
+      <ScrollArea className="h-screen w-[350px] rounded-md p-4">
+      <h2 className="text-[30px] font-bold ">Фільтри</h2>
+        <div className="px-4 ">
           {/* Сортування */}
           <section>
             <h3 className="text-[20px] font-bold">Сортування</h3>
@@ -131,7 +131,7 @@ function Filters({ onApplyFilters }) {
           <section>
             <h3 className="text-[20px] font-bold mt-4">DLC</h3>
             <RadioGroup value={selectedFilters.dlc === null ? '0' : selectedFilters.dlc ? '1' : '2'} onValueChange={(value) => handleRadioChange('dlc', value === '0' ? null : value === '1')}>
-              {['Шукати всі', 'Тільки DLC', 'Без DLC'].map((label, index) => (
+              {['Шукати всі', 'Тільки з DLC', 'Без DLC'].map((label, index) => (
                 <Fade key={index}>
                   <label className="flex items-center space-x-2">
                     <RadioGroupItem value={index.toString()} />
@@ -167,7 +167,7 @@ function Filters({ onApplyFilters }) {
                 value={[selectedFilters.minPrice, selectedFilters.maxPrice]}
                 onChange={handlePriceChange}
                 min={0}
-                max={1000}
+                max={150}
                 valueLabelDisplay="auto"
               />
             </Fade>
@@ -253,12 +253,13 @@ function Filters({ onApplyFilters }) {
               </Fade>
             ))}
           </section>
-        </div>
-      </ScrollArea>
-      <div className="flex space-x-4 mt-4">
+{         <div className=" flex space-x-4 mt-4">
         <Button onClick={handleApplyFilters}>Застосувати</Button>
         <Button onClick={handleResetFilters}>Скинути</Button>
-      </div>
+      </div>}
+      <div className='mb-16'></div>
+        </div>
+      </ScrollArea>
     </div>
   );
 }

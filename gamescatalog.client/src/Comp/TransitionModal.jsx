@@ -4,25 +4,31 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Fade from '@mui/material/Fade';
 import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { CarouselNext, CarouselPrevious, CarouselItem, CarouselContent, Carousel } from '@/components/ui/carousel';
-
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 1000,
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
-};
 
 export default function TransitionsModal({ open, handleClose, game }) {
   if (!game) return null;
 
+  // Перевірка ширини екрана для адаптивних стилів
+  const isSmallScreen = useMediaQuery('(max-width:600px)');
+  const isMediumScreen = useMediaQuery('(max-width:900px)');
+
+  // Стиль модального вікна
+  const modalStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: isSmallScreen ? '90%' : isMediumScreen ? '80%' : 1000,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    borderRadius: '8px',
+  };
+
   return (
     <Modal
-      style={{  borderRadius: '8px' }}
       aria-labelledby="game-modal-title"
       aria-describedby="game-modal-description"
       open={open}
@@ -34,7 +40,7 @@ export default function TransitionsModal({ open, handleClose, game }) {
       }}
     >
       <Fade in={open}>
-        <Box sx={style}>
+        <Box sx={modalStyle}>
           <Typography sx={{ mt: 2 }}>
             <Carousel>
               <CarouselContent>
@@ -43,7 +49,12 @@ export default function TransitionsModal({ open, handleClose, game }) {
                     <img
                       src={url}
                       alt={`${game.title} image ${index + 1}`}
-                      style={{ width: '500px', height: '400px', objectFit: 'cover', borderRadius: '8px' }}
+                      style={{
+                        width: isSmallScreen ? '100%' : '500px',
+                        height: isSmallScreen ? '250px' : '400px',
+                        objectFit: 'cover',
+                        borderRadius: '8px',
+                      }}
                     />
                   </CarouselItem>
                 ))}
@@ -56,6 +67,7 @@ export default function TransitionsModal({ open, handleClose, game }) {
               )}
             </Carousel>
           </Typography>
+
           <Typography id="game-modal-title" variant="h4" component="h2" gutterBottom>
             {game.title}
           </Typography>
@@ -64,7 +76,7 @@ export default function TransitionsModal({ open, handleClose, game }) {
             <strong>Рейтинг:</strong> ({game.rating}/100) <br />
             <strong>Ціна:</strong> ${game.price} <br />
             <strong>Опис:</strong> {game.description} <br />
-            <strong>Вимог:</strong> {game.requirements} <br />
+            <strong>Вимоги:</strong> {game.requirements} <br />
             <strong>Розробник:</strong> {game.developer} <br />
             <strong>Видавець:</strong> {game.publisher} <br />
           </Typography>
