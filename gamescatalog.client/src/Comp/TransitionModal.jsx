@@ -13,6 +13,8 @@ export default function TransitionsModal({ open, handleClose, game }) {
 
   const isSmallScreen = useMediaQuery('(max-width:600px)');
   const isMediumScreen = useMediaQuery('(max-width:900px)');
+  const isMediumHeight = useMediaQuery('(max-height:800px)');
+
 
 
   const modalStyle = {
@@ -21,7 +23,7 @@ export default function TransitionsModal({ open, handleClose, game }) {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: isSmallScreen ? '90%' : isMediumScreen ? '80%' : 1000,
-    height: '80vh',
+    height: isMediumHeight ? '90vh' : '75vh',
     bgcolor: 'background.paper',
     boxShadow: 24,
     p: 4,
@@ -42,7 +44,7 @@ export default function TransitionsModal({ open, handleClose, game }) {
     >
       <Fade in={open}>
         <Box sx={modalStyle} className='flex flex-col'>
-          <Typography sx={{ mt: 2, mb: 2 }}>
+          <Typography sx={{  mb: 2 }}>
             <Carousel>
               <CarouselContent>
                 {game.contentUrls.map((url, index) => (
@@ -52,7 +54,7 @@ export default function TransitionsModal({ open, handleClose, game }) {
                       alt={`${game.title} image ${index + 1}`}
                       style={{
                         width: isSmallScreen ? '100%' : '500px',
-                        height: isSmallScreen ? '250px' : '400px',
+                        height: isSmallScreen ? '250px' : '300px',
                         objectFit: 'cover',
                         borderRadius: '8px',
                       }}
@@ -121,7 +123,7 @@ export default function TransitionsModal({ open, handleClose, game }) {
                              alt={`${game.title} image ${index + 1}`}
                              style={{
                                width: isSmallScreen ? '100%' : '500px',
-                               height: isSmallScreen ? '250px' : '400px',
+                               height: isSmallScreen ? '250px' : '300px',
                                objectFit: 'cover',
                                borderRadius: '8px',
                              }}
